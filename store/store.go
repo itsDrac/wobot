@@ -7,6 +7,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Store interface {
+}
+
 type SQLiteStore struct {
 	DB *sql.DB
 }
