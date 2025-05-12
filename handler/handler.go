@@ -38,8 +38,8 @@ func (h ChiHandler) Mount(router http.Handler) {
 			// Authenticate routes.
 			r.Group(func(r chi.Router) {
 				r.Use(h.AuthUser)
-				r.Get("/storage", h.GetStorage)
 				r.Post("/upload", h.UploadFile)
+				r.Get("/storage/remaining", h.GetStorage)
 			})
 		})
 	})

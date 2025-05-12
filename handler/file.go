@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -34,4 +35,26 @@ func (h ChiHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("File uploaded successfully"))
 
+}
+
+func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
+
+	remainingStorage, err := h.Service.File.GetRemainingStorage(r.Context())
+	if err != nil {
+		http.Error(w, "Failed to get remaining storage", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	resp := struct {
+		RemainingStorage string `json:"remaining_storage"`
+	}{
+		RemainingStorage: remainingStorage,
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		log.Println("Error encoding response:", err)
+		return
+	}
 }

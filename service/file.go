@@ -63,3 +63,14 @@ func (f *FileService) UploadFile(ctx context.Context, file multipart.File, fileI
 	}
 	return nil
 }
+
+func (f *FileService) GetRemainingStorage(ctx context.Context) (string, error) {
+	// Get user from context.
+	user, ok := ctx.Value("user").(*store.User)
+	if !ok {
+		return "", fmt.Errorf("user not found in context")
+	}
+	// Get the remaining storage.
+	remainingStorage := user.TotalStorage - user.CurrentStorage
+	return utils.FormatBytes(remainingStorage), nil
+}

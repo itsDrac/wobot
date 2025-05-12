@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/itsDrac/wobot/store"
 	"github.com/itsDrac/wobot/types"
 )
 
@@ -93,28 +92,6 @@ func (h ChiHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		Token string `json:"token"`
 	}{
 		Token: token,
-	}
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Println("Error encoding response:", err)
-		return
-	}
-}
-
-func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
-	// Get the user from the request context
-	user, ok := r.Context().Value("user").(*store.User)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	// Return username for now.
-	w.Header().Set("Content-Type", "application/json")
-	resp := struct {
-		Username string `json:"username"`
-	}{
-		Username: user.Username,
 	}
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {

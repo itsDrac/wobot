@@ -30,3 +30,8 @@
     ```
     curl -X POST -H "Authorization: Bearer <token>" -F "file=@<book.pdf>" localhost:8080/api/v1/upload
     ```
+
+- Remaining Storage.
+    ```
+    curl -X GET -H "Authorization: Bearer <token>" -F "file=@<book.pdf>" localhost:8080/api/v1/storage/remaining
+    ```

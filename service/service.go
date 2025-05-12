@@ -16,6 +16,7 @@ type Service struct {
 	}
 	File interface {
 		UploadFile(ctx context.Context, file multipart.File, FileInfo *multipart.FileHeader) error
+		GetRemainingStorage(ctx context.Context) (string, error)
 	}
 }
 

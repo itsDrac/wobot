@@ -24,3 +24,15 @@ func GetIntEnv(key string, defaultValue int) int {
 	}
 	return intValue
 }
+
+func FormatBytes(bytes int64) string {
+	if bytes < 1024 {
+		return strconv.FormatInt(bytes, 10) + " B"
+	} else if bytes < (1 << 20) {
+		return strconv.FormatInt(bytes/(1<<10), 10) + " KB"
+	} else if bytes < (1 << 30) {
+		return strconv.FormatInt(bytes/(1<<20), 10) + " MB"
+	} else {
+		return strconv.FormatInt(bytes/(1<<30), 10) + " GB"
+	}
+}
