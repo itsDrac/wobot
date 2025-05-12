@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -8,6 +9,8 @@ import (
 )
 
 type Store interface {
+	CreateUser(context.Context, *User) error
+	GetUserByUsername(context.Context, *User) error
 }
 
 type SQLiteStore struct {

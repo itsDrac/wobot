@@ -27,6 +27,13 @@ func MigrateUp(con *DatabaseConfig, db *sql.DB) error {
 		fmt.Println("Can not get migration instance.")
 		return err
 	}
-	m.Up()
+	if err := m.Up(); err != nil {
+		if err == migrate.ErrNoChange {
+			fmt.Println("No change in migration.")
+			return nil
+		}
+		fmt.Println("Error in migration.")
+		return err
+	}
 	return nil
 }
