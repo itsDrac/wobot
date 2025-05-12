@@ -12,5 +12,6 @@ type API interface {
 	AuthUser(http.Handler) http.Handler
 	UploadFile(http.ResponseWriter, *http.Request)
 	GetStorage(http.ResponseWriter, *http.Request)
+	GetFiles(http.ResponseWriter, *http.Request)
 	Run(http.Handler)
 }

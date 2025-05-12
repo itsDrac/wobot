@@ -58,3 +58,30 @@ func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h ChiHandler) GetFiles(w http.ResponseWriter, r *http.Request) {
+	resp, err := h.Service.File.GetFiles(r.Context())
+	if err != nil {
+		if strings.Contains(err.Error(), "user not found in context") {
+			http.Error(w, "User not found in context", http.StatusBadRequest)
+			return
+		}
+		if strings.Contains(err.Error(), "failed to get files") {
+			http.Error(w, "Failed to get files", http.StatusInternalServerError)
+			return
+		}
+		if strings.Contains(err.Error(), "failed to get file info") {
+			http.Error(w, "Failed to get file info", http.StatusInternalServerError)
+			return
+		}
+		http.Error(w, "Failed to get files", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		log.Println("Error encoding response:", err)
+		return
+	}
+}

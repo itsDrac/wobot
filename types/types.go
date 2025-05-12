@@ -13,3 +13,12 @@ type LoginUserPayload struct {
 type UploadFilePayload struct {
 	FileName string `json:"file_name" validate:"required"`
 }
+
+type FileInfo struct {
+	FileName string `json:"file_name" validate:"required"`
+	FileSize string `json:"file_size" validate:"required"`
+}
+
+type Files struct {
+	FilesInfo []FileInfo `json:"files_info" validate:"required"`
+}

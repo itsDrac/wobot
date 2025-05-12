@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -27,12 +28,12 @@ func GetIntEnv(key string, defaultValue int) int {
 
 func FormatBytes(bytes int64) string {
 	if bytes < 1024 {
-		return strconv.FormatInt(bytes, 10) + " B"
+		return fmt.Sprintf("%.2f B", float64(bytes))
 	} else if bytes < (1 << 20) {
-		return strconv.FormatInt(bytes/(1<<10), 10) + " KB"
+		return fmt.Sprintf("%.2f KB", float64(bytes)/(1<<10))
 	} else if bytes < (1 << 30) {
-		return strconv.FormatInt(bytes/(1<<20), 10) + " MB"
+		return fmt.Sprintf("%.2f MB", float64(bytes)/(1<<20))
 	} else {
-		return strconv.FormatInt(bytes/(1<<30), 10) + " GB"
+		return fmt.Sprintf("%.2f GB", float64(bytes)/(1<<30))
 	}
 }

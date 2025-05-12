@@ -40,6 +40,7 @@ func (h ChiHandler) Mount(router http.Handler) {
 				r.Use(h.AuthUser)
 				r.Post("/upload", h.UploadFile)
 				r.Get("/storage/remaining", h.GetStorage)
+				r.Get("/files", h.GetFiles)
 			})
 		})
 	})

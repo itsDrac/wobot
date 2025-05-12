@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 
 	"github.com/itsDrac/wobot/store"
+	"github.com/itsDrac/wobot/types"
 	"github.com/itsDrac/wobot/utils"
 )
 
@@ -73,4 +75,42 @@ func (f *FileService) GetRemainingStorage(ctx context.Context) (string, error) {
 	// Get the remaining storage.
 	remainingStorage := user.TotalStorage - user.CurrentStorage
 	return utils.FormatBytes(remainingStorage), nil
+}
+
+func (f *FileService) GetFiles(ctx context.Context) (types.Files, error) {
+	// Get user from context.
+	user, ok := ctx.Value("user").(*store.User)
+	if !ok {
+		return types.Files{}, fmt.Errorf("user not found in context")
+	}
+	// Create a variable with the path to folder where current user files are stored.
+	userFilesPath := filepath.Join(f.UploadFolder, user.Username)
+	entries, err := os.ReadDir(userFilesPath)
+	if err != nil {
+		return types.Files{}, fmt.Errorf("failed to read directory: %s", err.Error())
+	}
+	var filesInfo types.Files
+	for _, file := range entries {
+		f, err := GetFileInfo(file)
+		if err != nil {
+			return types.Files{}, fmt.Errorf("failed to get file info: %s", err.Error())
+		}
+		filesInfo.FilesInfo = append(filesInfo.FilesInfo, f)
+	}
+
+	return filesInfo, nil
+}
+
+func GetFileInfo(f fs.DirEntry) (types.FileInfo, error) {
+	fileInfo, err := f.Info()
+	if err != nil {
+		return types.FileInfo{}, fmt.Errorf("failed to get file info: %s", err.Error())
+	}
+	fileName := fileInfo.Name()
+	fileSize := utils.FormatBytes(fileInfo.Size())
+
+	return types.FileInfo{
+		FileName: fileName,
+		FileSize: fileSize,
+	}, nil
 }

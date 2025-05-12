@@ -15,8 +15,9 @@ type Service struct {
 		Authenticate(ctx context.Context, token string) (*store.User, error)
 	}
 	File interface {
-		UploadFile(ctx context.Context, file multipart.File, FileInfo *multipart.FileHeader) error
+		UploadFile(ctx context.Context, file multipart.File, fileInfo *multipart.FileHeader) error
 		GetRemainingStorage(ctx context.Context) (string, error)
+		GetFiles(ctx context.Context) (types.Files, error)
 	}
 }
 
