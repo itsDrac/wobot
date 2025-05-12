@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -60,7 +61,27 @@ func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h ChiHandler) GetFiles(w http.ResponseWriter, r *http.Request) {
-	resp, err := h.Service.File.GetFiles(r.Context())
+	query := r.URL.Query()
+	limit := query.Get("limit")
+	offset := query.Get("offset")
+	if limit == "" {
+		limit = "10"
+	}
+	if offset == "" {
+		offset = "0"
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		http.Error(w, "Invalid limit value", http.StatusBadRequest)
+		return
+	}
+	offsetInt, err := strconv.Atoi(offset)
+	if err != nil {
+		http.Error(w, "Invalid offset value", http.StatusBadRequest)
+		return
+	}
+	log.Printf("Limit: %d, Offset: %d", limitInt, offsetInt)
+	resp, err := h.Service.File.GetFiles(r.Context(), limitInt, offsetInt)
 	if err != nil {
 		if strings.Contains(err.Error(), "user not found in context") {
 			http.Error(w, "User not found in context", http.StatusBadRequest)

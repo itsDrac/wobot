@@ -52,7 +52,6 @@ func (h ChiHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h ChiHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Parse the request body
-	log.Println("hander/LoginUser:55")
 	var user types.LoginUserPayload
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, ErrInvalidRequestData.Error(), http.StatusBadRequest)

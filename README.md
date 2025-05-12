@@ -35,3 +35,18 @@
     ```
     curl -X GET -H "Authorization: Bearer <token>" -F "file=@<book.pdf>" localhost:8080/api/v1/storage/remaining
     ```
+
+- Get files.
+    ```
+    curl -X GET -H "Authorization: Bearer <token>" localhost:8080/api/v1/files
+    ```
+    Response.
+    ```
+    {
+        "files_info":
+        [
+            {"file_name":"book.pdf","file_size":"7.89 MB"},
+            {"file_name":"pic.jpeg","file_size":"196.41 KB"}
+        ]
+    }
+    ```

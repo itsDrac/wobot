@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -73,7 +72,6 @@ func (s UserService) LoginUser(ctx context.Context, userPayload *types.LoginUser
 	if !CheckPasswordHash(userPayload.Password, user.Password) {
 		return "", fmt.Errorf("Invalid password")
 	}
-	log.Println("service/LoginUser:66")
 	// Make JWT token.
 	token, err := s.jwtService.GenerateToken(user.Username)
 	if err != nil {

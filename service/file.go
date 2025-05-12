@@ -77,7 +77,7 @@ func (f *FileService) GetRemainingStorage(ctx context.Context) (string, error) {
 	return utils.FormatBytes(remainingStorage), nil
 }
 
-func (f *FileService) GetFiles(ctx context.Context) (types.Files, error) {
+func (f *FileService) GetFiles(ctx context.Context, limit int, offset int) (types.Files, error) {
 	// Get user from context.
 	user, ok := ctx.Value("user").(*store.User)
 	if !ok {
@@ -90,7 +90,13 @@ func (f *FileService) GetFiles(ctx context.Context) (types.Files, error) {
 		return types.Files{}, fmt.Errorf("failed to read directory: %s", err.Error())
 	}
 	var filesInfo types.Files
-	for _, file := range entries {
+	for i, file := range entries {
+		if i < offset {
+			continue
+		}
+		if i >= limit+offset {
+			break
+		}
 		f, err := GetFileInfo(file)
 		if err != nil {
 			return types.Files{}, fmt.Errorf("failed to get file info: %s", err.Error())
