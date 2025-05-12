@@ -10,4 +10,23 @@
 
 ## Instructions
 - Fork the repository and clone it to your local machine.
+- To run the application cd into project folder and do `go run *.go`
 
+## Test Apis
+- Create User.
+    ```
+    curl -X POST -H "Content-Type: application/json" -d '{"username": "Sahaj", "password": "123"}' localhost:8080/api/v1/users/create
+    ```
+- Login User.
+    ```
+    curl -X POST -H "Content-Type: application/json" -d '{"username": "Sahaj", "password": "123"}' localhost:8080/api/v1/users/login
+    ```
+    Response.
+    ```
+    {"token":"<token>"}
+    ```
+
+- Upload File.
+    ```
+    curl -X POST -H "Authorization: Bearer <token>" -F "file=@<book.pdf>" localhost:8080/api/v1/upload
+    ```

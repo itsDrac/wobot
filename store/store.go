@@ -11,6 +11,7 @@ import (
 type Store interface {
 	CreateUser(context.Context, *User) error
 	GetUserByUsername(context.Context, *User) error
+	UpdateCurrentStorage(context.Context, *User, int64) error
 }
 
 type SQLiteStore struct {

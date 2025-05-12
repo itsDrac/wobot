@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/itsDrac/wobot/store"
 	"github.com/itsDrac/wobot/types"
@@ -14,13 +15,15 @@ type Service struct {
 		Authenticate(ctx context.Context, token string) (*store.User, error)
 	}
 	File interface {
-		UploadFile(ctx context.Context, filePayload *types.UploadFilePayload) error
+		UploadFile(ctx context.Context, file multipart.File, FileInfo *multipart.FileHeader) error
 	}
 }
 
 func NewService(s store.Store) Service {
 	UserService := NewUserService(s)
+	FileService := NewFileService(s)
 	return Service{
 		User: &UserService,
+		File: &FileService,
 	}
 }
