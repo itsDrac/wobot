@@ -13,6 +13,7 @@
 - To run the application cd into project folder and do `go run *.go`
 
 ## Test Apis
+- Use swagger `localhost:8080/swagger/index.html`
 - Create User.
     ```
     curl -X POST -H "Content-Type: application/json" -d '{"username": "Sahaj", "password": "123"}' localhost:8080/api/v1/users/create

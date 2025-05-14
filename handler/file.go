@@ -2,12 +2,26 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/itsDrac/wobot/types"
 )
 
+// UploadFile godoc
+// @Summary Upload a file
+// @Description Upload a file to the server
+// @Tags Files
+// @Accept multipart/form-data
+// @Param file formData file true "File to upload"
+// @Security Bearer
+// @Success 201 {object} types.ApiResponse
+// @Failure 409 {object} string "Not enough storage space"
+// @Failure 500 {object} string "Internal server error"
+// @Router /upload [post]
 func (h ChiHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	// Cap for request size.
 	const maxSizePerRequest = 10 << 20 // 10MB
@@ -34,10 +48,27 @@ func (h ChiHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("File uploaded successfully"))
+	w.Header().Set("Content-Type", "application/json")
+	resp := types.ApiResponse{
+		Message: "File uploaded successfully",
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Error encoding response:", err)
+		return
+	}
 
 }
 
+// GetStorage godoc
+// @Summary Get remaining storage
+// @Description Get remaining storage for the user
+// @Tags Files
+// @Accept json
+// @Security Bearer
+// @Success 200 {object} types.ApiResponse "Remaining storage: 100.0 MB"
+// @Failure 500 {object} string "Internal server error"
+// @Router /storage/remaining [get]
 func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
 
 	remainingStorage, err := h.Service.File.GetRemainingStorage(r.Context())
@@ -47,10 +78,8 @@ func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	resp := struct {
-		RemainingStorage string `json:"remaining_storage"`
-	}{
-		RemainingStorage: remainingStorage,
+	resp := types.ApiResponse{
+		Message: fmt.Sprintf("Remaining storage: %s", remainingStorage),
 	}
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -60,6 +89,17 @@ func (h ChiHandler) GetStorage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetFiles godoc
+// @Summary Get files
+// @Description Get files for the user
+// @Tags Files
+// @Accept json
+// @Param limit query int false "Limit of files to return"
+// @Param offset query int false "Offset for pagination"
+// @Security Bearer
+// @Success 200 {object} types.Files "List of files"
+// @Failure 500 {object} string "Internal server error"
+// @Router /files [get]
 func (h ChiHandler) GetFiles(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	limit := query.Get("limit")

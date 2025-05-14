@@ -14,6 +14,17 @@ var (
 	ErrInvalidRequestData = errors.New("invalid request data")
 )
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user by providing username and password
+// @Tags Users
+// @Accept json
+// @Param data body types.CreateUserPayload true "User data"
+// @Success 201 {object} types.ApiResponse
+// @Failure 400 {object} string "Invalid request data"
+// @Failure 409 {object} string
+// @Failure 500 {object} string "Internal server error"
+// @Router /users/create [post]
 func (h ChiHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	// Parse the request body
 	var user types.CreateUserPayload
@@ -48,8 +59,29 @@ func (h ChiHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	resp := types.ApiResponse{
+		Message: "User created successfully",
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Error encoding response:", err)
+		return
+	}
 }
 
+// LoginUser godoc
+// @Summary Login an existing user
+// @Description Login an existing user by providing username and password
+// @Tags Users
+// @Accept json
+// @Param data body types.LoginUserPayload true "User data"
+// @Success 200 {object} types.LoginUserResponsePayload
+// @Failure 400 {object} string "Invalid request data"
+// @Failure 404 {object} string "User not found"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal server error"
+// @Router /users/login [post]
 func (h ChiHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Parse the request body
 	var user types.LoginUserPayload
@@ -87,9 +119,7 @@ func (h ChiHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Return the token
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Authorization", "Bearer "+token)
-	resp := struct {
-		Token string `json:"token"`
-	}{
+	resp := types.LoginUserResponsePayload{
 		Token: token,
 	}
 	w.WriteHeader(http.StatusOK)

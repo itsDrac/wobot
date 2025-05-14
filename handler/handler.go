@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/itsDrac/wobot/service"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 var validate *validator.Validate
@@ -17,6 +18,9 @@ func NewChiRouter() chi.Router {
 	validate = validator.New()
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // The url pointing to API definition
+	))
 	return r
 }
 

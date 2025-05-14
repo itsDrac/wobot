@@ -4,7 +4,11 @@ import (
 	"context"
 	"net/http"
 	"strings"
+
+	"github.com/itsDrac/wobot/types"
 )
+
+var UserContextKey types.UserContextKey = "user"
 
 func (h ChiHandler) AuthUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +30,7 @@ func (h ChiHandler) AuthUser(next http.Handler) http.Handler {
 			return
 		}
 		// Set the user in the request context
-		ctx := context.WithValue(r.Context(), "user", user)
+		ctx := context.WithValue(r.Context(), UserContextKey, user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

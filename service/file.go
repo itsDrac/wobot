@@ -15,6 +15,8 @@ import (
 	"github.com/itsDrac/wobot/utils"
 )
 
+var UserContextKey types.UserContextKey = "user"
+
 type FileService struct {
 	UploadFolder string
 	store        store.Store
@@ -25,7 +27,6 @@ func NewFileService(s store.Store) FileService {
 	if err := os.MkdirAll(uploadFolder, os.ModePerm); err != nil {
 		log.Fatalf("Error in creating upload folder %s", err.Error())
 	}
-	log.Printf("Upload folder %s created", uploadFolder)
 	return FileService{
 		UploadFolder: uploadFolder,
 		store:        s,
@@ -34,7 +35,7 @@ func NewFileService(s store.Store) FileService {
 
 func (f *FileService) UploadFile(ctx context.Context, file multipart.File, fileInfo *multipart.FileHeader) error {
 	// Get user from context.
-	user, ok := ctx.Value("user").(*store.User)
+	user, ok := ctx.Value(UserContextKey).(*store.User)
 	if !ok {
 		return fmt.Errorf("user not found in context")
 	}
@@ -68,7 +69,7 @@ func (f *FileService) UploadFile(ctx context.Context, file multipart.File, fileI
 
 func (f *FileService) GetRemainingStorage(ctx context.Context) (string, error) {
 	// Get user from context.
-	user, ok := ctx.Value("user").(*store.User)
+	user, ok := ctx.Value(UserContextKey).(*store.User)
 	if !ok {
 		return "", fmt.Errorf("user not found in context")
 	}
@@ -79,7 +80,7 @@ func (f *FileService) GetRemainingStorage(ctx context.Context) (string, error) {
 
 func (f *FileService) GetFiles(ctx context.Context, limit int, offset int) (types.Files, error) {
 	// Get user from context.
-	user, ok := ctx.Value("user").(*store.User)
+	user, ok := ctx.Value(UserContextKey).(*store.User)
 	if !ok {
 		return types.Files{}, fmt.Errorf("user not found in context")
 	}

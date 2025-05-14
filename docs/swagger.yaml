@@ -1,0 +1,213 @@
+basePath: /api/v1
+definitions:
+  types.ApiResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  types.CreateUserPayload:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  types.FileInfo:
+    properties:
+      file_name:
+        type: string
+      file_size:
+        type: string
+    required:
+    - file_name
+    - file_size
+    type: object
+  types.Files:
+    properties:
+      files_info:
+        items:
+          $ref: '#/definitions/types.FileInfo'
+        type: array
+    required:
+    - files_info
+    type: object
+  types.LoginUserPayload:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  types.LoginUserResponsePayload:
+    properties:
+      token:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: gpt.sahaj28@gmail.com
+    name: Sahaj
+  description: This is a Wobot API, where users can upload files and get their storage
+    information.
+  title: Wobot API
+  version: "1.0"
+paths:
+  /files:
+    get:
+      consumes:
+      - application/json
+      description: Get files for the user
+      parameters:
+      - description: Limit of files to return
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: List of files
+          schema:
+            $ref: '#/definitions/types.Files'
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get files
+      tags:
+      - Files
+  /storage/remaining:
+    get:
+      consumes:
+      - application/json
+      description: Get remaining storage for the user
+      responses:
+        "200":
+          description: 'Remaining storage: 100.0 MB'
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get remaining storage
+      tags:
+      - Files
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a file to the server
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "409":
+          description: Not enough storage space
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Upload a file
+      tags:
+      - Files
+  /users/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user by providing username and password
+      parameters:
+      - description: User data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserPayload'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            type: string
+        "409":
+          description: Conflict
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login an existing user by providing username and password
+      parameters:
+      - description: User data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginUserPayload'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LoginUserResponsePayload'
+        "400":
+          description: Invalid request data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Login an existing user
+      tags:
+      - Users
+schemes:
+- http
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

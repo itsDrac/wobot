@@ -22,3 +22,13 @@ type FileInfo struct {
 type Files struct {
 	FilesInfo []FileInfo `json:"files_info" validate:"required"`
 }
+
+type ApiResponse struct {
+	Message string `json:"message"`
+}
+
+type LoginUserResponsePayload struct {
+	Token string `json:"token"`
+}
+
+type UserContextKey string
